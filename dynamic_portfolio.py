@@ -319,7 +319,7 @@ def main(base_currency, interval="5m", max_portfolio_num=10):
             tmp = [ticker, tickers["binance"][ticker]["bid"], tickers["binance"][ticker]["ask"]]
             data_tickers.append(tmp)
     executor = ThreadPoolExecutor(max_workers = 2)
-    for r in ranking[:100]:
+    for r in ranking[:20]:
         ohlcv[r[0]] = executor.submit(binance.fetch_ohlcv, r[0], interval)
     for x in ohlcv:
         ohlcv[x] = ohlcv[x].result()
