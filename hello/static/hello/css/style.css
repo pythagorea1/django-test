@@ -2,10 +2,10 @@ body {
   color:gray;
   font-size:16pt;
 }
-
-table {
-  margin:10px;
-  font-size:14pt;
+table, td, th{
+    border: 1px solid black;
+    margin:10px;
+    font-size:14pt;
 }
 
 h1 {

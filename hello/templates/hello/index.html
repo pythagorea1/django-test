@@ -1,39 +1,76 @@
-{% load static %}
-<!doctype html>
+{% load staticfiles %}
 <html lang="ja">
 <head>
   <meta charset="utf-8">
-  <title>{{title}}</title>
-  <link rel="stylesheet" type="text/css" href="{% static 'hello/css/style.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.css' %}"/>
+  <script src="../../static/js/Chart.min.js"></script>
+  <script src="../../static/js/utils.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0/dist/Chart.min.js"></script>
 </head>
 <body>
-  <h1>{{title}}</h1>
-  <table>
-    <tr>
-      <th>ID</th>
-      <th>NAME</th>
-      <th>GENDER</th>
-      <th>MAIL</th>
-      <th>AGE</th>
-      <th>BIRTHDAY</th>
-    </tr>
-  {% for item in data %}
-    <tr>
-      <td>{{item.id}}</td>
-      <td>{{item.name}}</td>
-      <td>{% if item.gender == False %}male{% endif %}
-          {% if item.gender == True %}female{% endif %}</td>
-      <td>{{item.mail}}</td>
-      <td>{{item.age}}</td>
-      <td>{{item.birthday}}</td>
-    </tr>
-  {% endfor %}
-  </table>
-  <form action="{% url 'form' %}" method="post">
+  <h1>Optimal Portfolio in Binance</h1>
+  <form action="{% url 'index' %}" method="post">
     {% csrf_token %}
-    <label for="msg">message : </label>
-    <input id="msg" type="text" name="msg">
-    <input type="submit" value="click">
+    {{ form.as_table }}
+    <tr><td></td><td><input type="submit" value="calculate"></td></tr>
   </form>
+  <canvas id="myChart" width="150" height="150"></canvas>
+  <table border="1" class="table table-striped">
+    <tr>
+      <th>portfolio_return(daily)</th>
+      <th>portfolio_volatility(daily)</th>
+    </tr>
+    <tr>
+      <td>{{daily_implied_return}}</td>
+      <td>{{portfolio_std}}</td>
+    </tr>
+  </table>
+  <table border="1" class="table table-striped">
+    <tr>
+      <th>symbol</th>
+      <th>weight</th>
+    </tr>
+    {% for i in weights %}
+    <tr>
+        <td>{{i.symbol}}</td>
+        <td>{{i.value}}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  <script>
+    {% block jquery %}
+    var endpoint = '/hello/api/chart/data'
+    $.ajax({
+      method: "GET",
+      url: endpoint,
+      success: function(data){
+        labels = data.label
+        defaultData = data.data
+        color = data.color
+        setChart()
+      },
+      error: function(error_data){
+        console.log("error")
+        console.log(error_data)
+      }
+    })
+    function setChart(){
+      var ctx = document.getElementById('myChart').getContext('2d');
+      var myChart = new Chart(ctx, {
+          type: 'polarArea',
+          data: {
+              labels: labels,
+              datasets: [{
+                  label: 'Optimal Portfolio',
+                  data: defaultData,
+                  backgroundColor: color,
+                  borderWidth: 1
+              }]
+          }
+      });
+    }
+    {% endblock %}
+  </script>
 </body>
 </html>
