@@ -10,7 +10,6 @@ from operator import itemgetter
 import time
 import json
 from datetime import datetime
-import matplotlib.pyplot as plt
 from concurrent.futures import *
 import random
 import pickle
@@ -334,9 +333,6 @@ def main(base_currency, interval="5m", max_portfolio_num=10):
     weights = weights.sort_values(ascending=False)[:max_portfolio_num]
     weights /= np.sum(weights)
     print(weights)
-    plt.pie(weights,
-            autopct="%1.1f%%",
-            labels=weights.index)
     total_ret = 0
     portfolio_variance = 0
     c = cov.values
